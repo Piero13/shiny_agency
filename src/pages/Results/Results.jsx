@@ -1,7 +1,7 @@
 function Results() {
     return (
         <div>
-            <h2>Résultats</h2>
+            <h1>Résultats</h1>
         </div>
     )
 }
