@@ -8,7 +8,7 @@ import Error from './components/Error/Error'
 import Results from './pages/Results/Results'
 import Freelances from './pages/Freelances/Freelances'
 import Footer from './components/Footer/Footer'
-import { ThemeProvider, SurveyProvider } from './utils/context/ThemeProvider';
+import { ThemeProvider, SurveyProvider } from './utils/context/Context';
 import GlobalStyle from './utils/style/GlobalStyle'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

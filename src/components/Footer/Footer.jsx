@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { ThemeContext } from "../../utils/context/ThemeProvider"
+import { ThemeContext } from "../../utils/context/Context"
 import styled from "styled-components"
 import colors from "../../utils/style/colors"
 
