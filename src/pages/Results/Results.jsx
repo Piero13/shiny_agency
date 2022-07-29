@@ -1,10 +1,9 @@
-import { useContext } from "react"
-import { SurveyContext } from "../../utils/context/Context"
-import styled from "styled-components"
-import colors from "../../utils/style/colors"
-import { useFetch } from "../../utils/hooks/Hooks"
-import { StyledLink, Loader } from "../../utils/style/Atoms"
-import { ThemeContext } from "../../utils/context/Context"
+import { useContext } from 'react'
+import { SurveyContext } from '../../utils/context/Context'
+import styled from 'styled-components'
+import colors from '../../utils/style/colors'
+import { useFetch, useTheme } from '../../utils/hooks/Hooks'
+import { StyledLink, Loader } from '../../utils/style/Atoms'
 
 const ResultsContainer = styled.div`
   display: flex;
@@ -53,62 +52,74 @@ const LoaderWrapper = styled.div`
   justify-content: center;
 `
 
-function formatFetchParams(answers) {
-    const answerNumbers = Object.keys(answers)
+export function formatQueryParams(answers) {
+  const answerNumbers = Object.keys(answers)
 
-    return answerNumbers.reduce((previousParams, answerNumber, index) => {
-        const isFirstParam = index === 0
-        const separator = isFirstParam ? '' : '&'
-        return `${previousParams}${separator}a${answerNumber}=${answers[answerNumber]}`
-    }, '')
+  return answerNumbers.reduce((previousParams, answerNumber, index) => {
+    const isFirstParam = index === 0
+    const separator = isFirstParam ? '' : '&'
+    return `${previousParams}${separator}a${answerNumber}=${answers[answerNumber]}`
+  }, '')
+}
+
+export function formatJobList(title, listLength, index) {
+  if (index === listLength - 1) {
+    return title
+  } else {
+    return `${title},`
+  }
 }
 
 function Results() {
-    const { theme } = useContext(ThemeContext)
-    const { answers } = useContext(SurveyContext)
-    const fetchParams = formatFetchParams(answers)
-    const { data, isLoading, error } = useFetch(`http://localhost:8000/results?${fetchParams}`)
+  const { theme } = useTheme()
+  const { answers } = useContext(SurveyContext)
+  const queryParams = formatQueryParams(answers)
 
-    if(error) {
-        return <span>Oups, il y a un problème...</span>
-    }
+  const { data, isLoading, error } = useFetch(
+    `http://localhost:8000/results?${queryParams}`
+  )
 
-    const resultsData = data?.resultsData
+  if (error) {
+    return <span>Il y a un problème</span>
+  }
 
-    return isLoading ? (
-        <LoaderWrapper>
-            <Loader/>
-        </LoaderWrapper>
-    ) : (
-        <ResultsContainer theme={theme}>
-            <ResultsTitle theme={theme}>
-                Les compétences dont vous avez besoin :
-                {resultsData && resultsData.map((result, index) => (
-                    <JobTitle
-                        key={`result-title-${index}-${result.title}`}
-                        theme= {theme}
-                    >
-                        {result.title}
-                        {index === resultsData.lengh - 1 ? '' : ','}
-                    </JobTitle>
-                ))}
-            </ResultsTitle>
-            <StyledLink $isFullLink to="/freelances">
-                Découvrez nos profils
-            </StyledLink>
-            <DescriptionWrapper>
-                {resultsData && resultsData.map((result, index) => (
-                    <JobDescription
-                        key={`result-detail-${index}-${result.title}`}
-                        theme={theme}
-                    >
-                        <JobTitle theme={theme}>{result.title}</JobTitle>
-                        <p>{result.description}</p>
-                    </JobDescription>
-                ))}
-            </DescriptionWrapper>
-        </ResultsContainer>
-    )
+  const resultsData = data?.resultsData
+
+  return isLoading ? (
+    <LoaderWrapper>
+      <Loader />
+    </LoaderWrapper>
+  ) : (
+    <ResultsContainer theme={theme}>
+      <ResultsTitle theme={theme}>
+        Les compétences dont vous avez besoin :
+        {resultsData &&
+          resultsData.map((result, index) => (
+            <JobTitle
+              key={`result-title-${index}-${result.title}`}
+              theme={theme}
+            >
+              {formatJobList(result.title, resultsData.length, index)}
+            </JobTitle>
+          ))}
+      </ResultsTitle>
+      <StyledLink $isFullLink to="/freelances">
+        Découvrez nos profils
+      </StyledLink>
+      <DescriptionWrapper>
+        {resultsData &&
+          resultsData.map((result, index) => (
+            <JobDescription
+              theme={theme}
+              key={`result-detail-${index}-${result.title}`}
+            >
+              <JobTitle theme={theme}>{result.title}</JobTitle>
+              <p>{result.description}</p>
+            </JobDescription>
+          ))}
+      </DescriptionWrapper>
+    </ResultsContainer>
+  )
 }
 
 export default Results
