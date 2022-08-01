@@ -80,7 +80,13 @@ function Results() {
   )
 
   if (error) {
-    return <span>Il y a un problème</span>
+    return <pre>{error}</pre>
+  } else if (isLoading) {
+    return (
+      <LoaderWrapper>
+        <Loader />
+      </LoaderWrapper>
+    )
   }
 
   const resultsData = data?.resultsData
